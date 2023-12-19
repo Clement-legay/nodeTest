@@ -1,15 +1,12 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-const express_1 = __importDefault(require("express"));
+var express_1 = require("express");
 // @ts-ignore
-const pokedex_json_1 = __importDefault(require("../../data/pokedex.json"));
-const router = express_1.default.Router();
-router.get("/:id", (req, res) => {
-    const { id } = req.params;
-    const pokemon = pokedex_json_1.default.find((pokemon) => pokemon.id === parseInt(id));
+var pokedex_json_1 = require("../../data/pokedex.json");
+var router = express_1.default.Router();
+router.get("/:id", function (req, res) {
+    var id = req.params.id;
+    var pokemon = pokedex_json_1.default.find(function (pokemon) { return pokemon.id === parseInt(id); });
     if (pokemon) {
         res.status(200).json(pokemon);
     }
@@ -17,14 +14,16 @@ router.get("/:id", (req, res) => {
         res.status(404).json({ message: "Not found" });
     }
 });
-router.get("/", (req, res) => {
+router.get("/", function (req, res) {
     var _a, _b;
-    const page = parseInt((_a = req.query.page) !== null && _a !== void 0 ? _a : 1);
-    const perPage = parseInt((_b = req.query.perPage) !== null && _b !== void 0 ? _b : 1);
+    var page = parseInt((_a = req.query.page) !== null && _a !== void 0 ? _a : 1);
+    var perPage = parseInt((_b = req.query.perPage) !== null && _b !== void 0 ? _b : 1);
     if (req.query.name) {
-        const name = req.query.name.toString();
-        const pokemon = pokedex_json_1.default.find((p) => p.name.english.toLowerCase() === name.toLowerCase() ||
-            p.name.french.toLowerCase() === name.toLowerCase());
+        var name_1 = req.query.name.toString();
+        var pokemon = pokedex_json_1.default.find(function (p) {
+            return p.name.english.toLowerCase() === name_1.toLowerCase() ||
+                p.name.french.toLowerCase() === name_1.toLowerCase();
+        });
         res.status(200).json(pokemon);
         return;
     }

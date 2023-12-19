@@ -1,10 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const myLogger = (req, res, next) => {
-    const queries = req.query;
-    const body = req.body;
-    const params = req.params;
-    const authorization = req.headers.authorization;
+var myLogger = function (req, res, next) {
+    var queries = req.query;
+    var body = req.body;
+    var params = req.params;
+    var authorization = req.headers.authorization;
     console.log("Request received :");
     console.log("    Requested URL:", req.url);
     console.log("    Queries:", queries);

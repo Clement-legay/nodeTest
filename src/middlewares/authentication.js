@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const authentication = (req, res, next) => {
+var authentication = function (req, res, next) {
     if (req.headers.authorization) {
         next();
     }
