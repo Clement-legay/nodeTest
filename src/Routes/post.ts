@@ -1,5 +1,6 @@
 import {Post, PrismaClient, User} from "@prisma/client";
 import express from "express";
+import {SaveImageHelper} from "../Helpers/FileHelper";
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -24,7 +25,9 @@ router.get("/", async (req, res, next) => {
 
 router.post("/", async (req, res, next) => {
     try {
-        const {title, content, published, user} = req.body;
+        SaveImageHelper(req, res, { width: 400, height: undefined })
+        const {title, content, published, imagesPath, user} = req.body;
+        console.log(imagesPath)
         const post = await prisma.post.create({
             data: {
                 title: title,

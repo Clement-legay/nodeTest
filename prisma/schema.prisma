@@ -11,21 +11,44 @@ datasource db {
 }
 
 model User {
-  id       String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String @id @default(auto()) @map("_id") @db.ObjectId
   firstName String
   lastName  String
-  email     String    @unique
+  email     String @unique
   password  String
 
-  posts     Post[]  @relation("UserToPost")
+  posts Post[] @relation("UserToPost")
 }
 
 model Post {
-  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
   title     String
   content   String
-  published Boolean   @default(false)
+  published Boolean @default(false)
 
-  author    User?     @relation("UserToPost", fields: [authorId], references: [id])
-  authorId  String?   @map("author_id") @db.ObjectId
+  author   User?   @relation("UserToPost", fields: [authorId], references: [id])
+  authorId String? @map("author_id") @db.ObjectId
+
+  images ImagePost[] @relation("PostToImagePost")
+}
+
+model Image {
+  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  url    String
+  path   String
+  folder String
+
+  posts ImagePost[] @relation("ImageToImagePost")
+}
+
+model ImagePost {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  imageId String @map("image_id") @db.ObjectId
+  image   Image  @relation("ImageToImagePost", fields: [imageId], references: [id])
+
+  postId String @map("post_id") @db.ObjectId
+  post   Post   @relation("PostToImagePost", fields: [postId], references: [id])
+
+  @@unique([postId, imageId])
 }

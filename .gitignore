@@ -4,3 +4,4 @@ node_modules
 /uploads/
 /.idea/
 /mongodb_rs/data/
+/dist/

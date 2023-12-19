@@ -21,7 +21,7 @@ router.get("/", async (req: Request, res: Response, next) => {
             const url = addQueriesToUrl("https://rickandmortyapi.com/api/character/", req.query);
             const response = await fetch(url);
             if (response.ok) {
-                const data = await response.json();
+                const data: any = await response.json();
                 res.status(200).json(data.results);
             } else {
                 res.status(404).json({ message: "Not found" });
@@ -39,7 +39,7 @@ router.get("/getAll", async (req, res, next) => {
         const page: number = parseInt(req.query.page as string);
         const response = await fetch(`https://rickandmortyapi.com/api/character?page=${page}`);
         if (response.ok) {
-            const data = await response.json();
+            const data: any = await response.json();
             res.status(200).json(data.results);
         } else {
             res.status(404).json({ message: "Not found" });

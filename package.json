@@ -4,11 +4,11 @@
   "description": "My first app",
   "main": "src/index.ts",
   "scripts": {
-    "start": "node src/index.js",
-    "watch": "shx rm -rf lib/ && tsc src/index.ts -w --esModuleInterop --skipLibCheck",
-    "dev": "ts-node-dev src/index.ts"
+    "start": "node ./dist/index.js",
+    "build": "tsc",
+    "dev": "nodemon -L -e ts --exec \"npm run build && npm run start\""
   },
-  "author": "",
+  "author": "Moi",
   "license": "ISC",
   "dependencies": {
     "@prisma/client": "^5.7.1",

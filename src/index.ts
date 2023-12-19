@@ -1,15 +1,14 @@
 import express from 'express';
-import dogs from "./routes/dogs";
-import pokemon from "./routes/pokemon";
-import myLogger from "./middlewares/logger";
-import authentication from "./middlewares/authentication";
-import pickle from "./routes/pickle";
-import user from "./routes/user";
-import auth from "./routes/auth";
-import errorCatcher from "./middlewares/errorCatcher";
+import pokemon from "./Routes/pokemon";
+import myLogger from "./Middlewares/logger";
+import authentication from "./Middlewares/authentication";
+import pickle from "./Routes/pickle";
+import user from "./Routes/user";
+import auth from "./Routes/auth";
+import errorCatcher from "./Middlewares/errorCatcher";
 import cookieParser from "cookie-parser";
-import post from "./routes/post";
-import CheckLimiter from "./middlewares/rateLimiter";
+import post from "./Routes/post";
+import CheckLimiter from "./Middlewares/rateLimiter";
 
 const app = express();
 const port = 3000;
@@ -30,7 +29,6 @@ app.use("/auth", auth);
 
 app.use(authentication);
 
-app.use("/dogs", dogs);
 app.use("/pokemon", pokemon);
 app.use("/pickle", pickle);
 app.use("/user", user);
