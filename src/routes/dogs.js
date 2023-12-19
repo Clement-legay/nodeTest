@@ -10,11 +10,14 @@ var __assign = (this && this.__assign) || function () {
     };
     return __assign.apply(this, arguments);
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
-var express_1 = require("express");
-var multer_1 = require("multer");
+var express_1 = __importDefault(require("express"));
+var multer_1 = __importDefault(require("multer"));
 var uuid_1 = require("uuid");
-var sharp_1 = require("sharp");
+var sharp_1 = __importDefault(require("sharp"));
 var mkdirp_1 = require("mkdirp");
 var fs_1 = require("fs");
 var pendingAvatar = "./uploads/pending/";
@@ -44,36 +47,41 @@ var upload = (0, multer_1.default)({ storage: storage, fileFilter: function (req
         }
     }
 });
-router.post("/", function (req, res) {
-    (0, mkdirp_1.sync)(pendingAvatar);
-    (0, mkdirp_1.sync)(resizedAvatar);
-    upload.array("file")(req, res, function (err) {
-        if (err instanceof multer_1.default.MulterError) {
-            res.status(400).json({ message: err.message });
-        }
-        else if (err) {
-            res.status(400).json({ message: err });
-        }
-        else {
-            var files = req.files;
-            files.forEach(function (file) {
-                (0, sharp_1.default)(file.path)
-                    .resize(200, 200)
-                    .rotate(90)
-                    .toFile(resizedAvatar + file.filename, function (err) {
-                    if (err) {
-                        console.log(err.message);
-                    }
-                    (0, fs_1.unlink)(file.path, function (err) {
+router.post("/", function (req, res, next) {
+    try {
+        (0, mkdirp_1.sync)(pendingAvatar);
+        (0, mkdirp_1.sync)(resizedAvatar);
+        upload.array("file")(req, res, function (err) {
+            if (err instanceof multer_1.default.MulterError) {
+                res.status(400).json({ message: err.message });
+            }
+            else if (err) {
+                res.status(400).json({ message: err });
+            }
+            else {
+                var files = req.files;
+                files.forEach(function (file) {
+                    (0, sharp_1.default)(file.path)
+                        .resize(200, 200)
+                        .rotate(90)
+                        .toFile(resizedAvatar + file.filename, function (err) {
                         if (err) {
                             console.log(err.message);
                         }
+                        (0, fs_1.unlink)(file.path, function (err) {
+                            if (err) {
+                                console.log(err.message);
+                            }
+                        });
                     });
                 });
-            });
-            var data = req.body;
-            res.send(__assign({}, data));
-        }
-    });
+                var data = req.body;
+                res.send(__assign({}, data));
+            }
+        });
+    }
+    catch (e) {
+        next(e);
+    }
 });
 exports.default = router;

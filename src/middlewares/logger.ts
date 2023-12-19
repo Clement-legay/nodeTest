@@ -5,6 +5,7 @@ const myLogger = (req: Request, res: Response, next: NextFunction) => {
     const body = req.body;
     const params = req.params;
     const authorization = req.headers.authorization;
+    const cookies = req.cookies;
 
     console.log("Request received :");
     console.log("    Requested URL:", req.url);

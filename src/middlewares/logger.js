@@ -5,6 +5,7 @@ var myLogger = function (req, res, next) {
     var body = req.body;
     var params = req.params;
     var authorization = req.headers.authorization;
+    var cookies = req.cookies;
     console.log("Request received :");
     console.log("    Requested URL:", req.url);
     console.log("    Queries:", queries);

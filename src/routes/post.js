@@ -44,15 +44,24 @@ var express_1 = __importDefault(require("express"));
 var router = express_1.default.Router();
 var prisma = new client_1.PrismaClient();
 router.get("/", function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var users, e_1;
+    var posts, e_1;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
-                return [4 /*yield*/, prisma.user.findMany()];
+                return [4 /*yield*/, prisma.post.findMany({
+                        include: {
+                            author: {
+                                select: {
+                                    firstName: true,
+                                    lastName: true,
+                                }
+                            }
+                        }
+                    })];
             case 1:
-                users = _a.sent();
-                res.status(200).json(users);
+                posts = _a.sent();
+                res.status(200).json(posts);
                 return [3 /*break*/, 3];
             case 2:
                 e_1 = _a.sent();
@@ -62,26 +71,24 @@ router.get("/", function (req, res, next) { return __awaiter(void 0, void 0, voi
         }
     });
 }); });
-router.put("/:id", function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, _a, firstname, lastname, user, e_2;
+router.post("/", function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var _a, title, content, published, user, post, e_2;
     return __generator(this, function (_b) {
         switch (_b.label) {
             case 0:
                 _b.trys.push([0, 2, , 3]);
-                id = req.params.id;
-                _a = req.body, firstname = _a.firstname, lastname = _a.lastname;
-                return [4 /*yield*/, prisma.user.update({
-                        where: {
-                            id: id,
-                        },
+                _a = req.body, title = _a.title, content = _a.content, published = _a.published, user = _a.user;
+                return [4 /*yield*/, prisma.post.create({
                         data: {
-                            firstName: firstname,
-                            lastName: lastname,
-                        }
+                            title: title,
+                            content: content,
+                            published: published,
+                            authorId: user.id,
+                        },
                     })];
             case 1:
-                user = _b.sent();
-                res.status(200).json(user);
+                post = _b.sent();
+                res.status(200).json(post);
                 return [3 /*break*/, 3];
             case 2:
                 e_2 = _b.sent();
@@ -91,25 +98,64 @@ router.put("/:id", function (req, res, next) { return __awaiter(void 0, void 0, 
         }
     });
 }); });
+router.put("/:id", function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
+    var id, _a, title, content, published, user, post, e_3;
+    return __generator(this, function (_b) {
+        switch (_b.label) {
+            case 0:
+                _b.trys.push([0, 2, , 3]);
+                id = req.params.id;
+                _a = req.body, title = _a.title, content = _a.content, published = _a.published, user = _a.user;
+                return [4 /*yield*/, prisma.post.update({
+                        where: {
+                            id: id,
+                            authorId: user.id,
+                        },
+                        data: {
+                            title: title,
+                            content: content,
+                            published: published
+                        }
+                    })];
+            case 1:
+                post = _b.sent();
+                if (!post) {
+                    res.status(404).json({ message: "Post not found" });
+                    return [2 /*return*/];
+                }
+                res.status(200).json(post);
+                return [3 /*break*/, 3];
+            case 2:
+                e_3 = _b.sent();
+                next(e_3);
+                return [3 /*break*/, 3];
+            case 3: return [2 /*return*/];
+        }
+    });
+}); });
 router.delete("/:id", function (req, res, next) { return __awaiter(void 0, void 0, void 0, function () {
-    var id, user, e_3;
+    var id, post, e_4;
     return __generator(this, function (_a) {
         switch (_a.label) {
             case 0:
                 _a.trys.push([0, 2, , 3]);
                 id = req.params.id;
-                return [4 /*yield*/, prisma.user.delete({
+                return [4 /*yield*/, prisma.post.delete({
                         where: {
                             id: id,
                         }
                     })];
             case 1:
-                user = _a.sent();
-                res.status(200).json(user);
+                post = _a.sent();
+                if (!post) {
+                    res.status(404).json({ message: "Post not found" });
+                    return [2 /*return*/];
+                }
+                res.status(200).json(post);
                 return [3 /*break*/, 3];
             case 2:
-                e_3 = _a.sent();
-                next(e_3);
+                e_4 = _a.sent();
+                next(e_4);
                 return [3 /*break*/, 3];
             case 3: return [2 /*return*/];
         }

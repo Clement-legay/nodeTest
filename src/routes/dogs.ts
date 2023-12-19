@@ -36,36 +36,40 @@ const upload = multer({ storage, fileFilter: (req, file, callback) => {
     }
 });
 
-router.post("/", (req, res) => {
-    sync(pendingAvatar);
-    sync(resizedAvatar);
-    upload.array("file") (req, res, (err) => {
-        if (err instanceof multer.MulterError) {
-            res.status(400).json({ message: err.message });
-        } else if (err) {
-            res.status(400).json({ message: err });
-        } else {
-            const files = req.files as Express.Multer.File[];
-            files.forEach((file) => {
-                sharp(file.path)
-                    .resize(200, 200)
-                    .rotate(90)
-                    .toFile(resizedAvatar + file.filename, (err) => {
-                        if (err) {
-                            console.log(err.message);
-                        }
-                        unlink(file.path, (err) => {
+router.post("/", (req, res, next) => {
+    try {
+        sync(pendingAvatar);
+        sync(resizedAvatar);
+        upload.array("file") (req, res, (err) => {
+            if (err instanceof multer.MulterError) {
+                res.status(400).json({ message: err.message });
+            } else if (err) {
+                res.status(400).json({ message: err });
+            } else {
+                const files = req.files as Express.Multer.File[];
+                files.forEach((file) => {
+                    sharp(file.path)
+                        .resize(200, 200)
+                        .rotate(90)
+                        .toFile(resizedAvatar + file.filename, (err) => {
                             if (err) {
                                 console.log(err.message);
                             }
+                            unlink(file.path, (err) => {
+                                if (err) {
+                                    console.log(err.message);
+                                }
+                            });
                         });
-                    });
-            });
+                });
 
-            const data = req.body;
-            res.send({ ...data });
-        }
-    });
+                const data = req.body;
+                res.send({ ...data });
+            }
+        });
+    } catch (e: any) {
+        next(e);
+    }
 });
 
 export default router;
