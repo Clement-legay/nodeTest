@@ -2,6 +2,7 @@ import { Router } from "express";
 import prisma from "../Config/Database";
 import {safeExecutionWrapper} from "../Helper/ErrorCatcher";
 import {User} from "@prisma/client";
+import {WishDto} from "../Helper/WishDto";
 
 const router = Router();
 
@@ -57,6 +58,39 @@ router.get("/orders/", async (req, res, next) => {
         });
 
         res.status(200).json(orders);
+    });
+});
+
+router.patch("/user/:id", async (req, res, next) => {
+    await safeExecutionWrapper(res, async () => {
+        const { id } = req.params;
+        if (!WishDto([{key: "role", type: "string"}], req.body, res)) return;
+        const { role } = req.body;
+        if (role !== "ADMIN" && role !== "MANAGER" && role !== "USER") {
+            res.status(400).json({ message: "Bad request" });
+            return;
+        }
+        const user = await prisma.user.update({
+            where: {
+                id: id,
+            },
+            data: {
+                role: role,
+            },
+            select: {
+                id: true,
+                firstName: true,
+                lastName: true,
+                email: true,
+                role: true,
+            }
+        });
+        if (!user) {
+            res.status(404).json({ message: "User not found" });
+            return;
+        }
+
+        res.status(200).json(user);
     });
 });
 

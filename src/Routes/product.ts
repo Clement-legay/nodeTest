@@ -5,6 +5,7 @@ import {safeExecutionWrapper} from "../Helper/ErrorCatcher";
 import {WishDto} from "../Helper/WishDto";
 import {orderCreateDto} from "../dto/orderDto";
 import {productCreateDto, productUpdateDto} from "../dto/productDto";
+import isManager from "../Middlewares/isManager";
 
 const router = Router();
 
@@ -43,7 +44,7 @@ router.get("/:id", async (req, res, next) => {
     });
 });
 
-router.post("/", FileHelper, async (req, res, next) => {
+router.post("/", isManager, FileHelper, async (req, res, next) => {
     await safeExecutionWrapper(res, async () => {
         if (!WishDto(productCreateDto, req.body, res)) return;
         const { name, price, description, imagePaths } = req.body;
@@ -86,7 +87,7 @@ router.post("/", FileHelper, async (req, res, next) => {
     });
 });
 
-router.put("/:id", FileHelper, async (req, res, next) => {
+router.put("/:id", isManager, FileHelper, async (req, res, next) => {
     await safeExecutionWrapper(res, async () => {
         if (!WishDto(productUpdateDto, req.body, res)) return;
         const { id } = req.params;
@@ -147,7 +148,7 @@ router.put("/:id", FileHelper, async (req, res, next) => {
     });
 });
 
-router.delete("/:id", async (req, res, next) => {
+router.delete("/:id", isManager, async (req, res, next) => {
     await safeExecutionWrapper(res, async () => {
         const { id } = req.params;
         const product = await prisma.product.delete({
