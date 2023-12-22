@@ -2,11 +2,15 @@ import express from "express";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import prisma from "../Config/Database";
+import {safeExecutionWrapper} from "../Helper/ErrorCatcher";
+import {WishDto} from "../Helper/WishDto";
+import {userSigninDto, userSignupDto} from "../dto/userDto";
 
 const router = express.Router();
 
 router.post("/signin", async (req, res, next) => {
-    try {
+    await safeExecutionWrapper(res, async () => {
+        if (!WishDto(userSigninDto, req.body, res)) return;
         const {email, password} = req.body;
         const user = await prisma.user.findUnique({
             where: {
@@ -34,13 +38,12 @@ router.post("/signin", async (req, res, next) => {
         } else {
             res.status(404).json({message: "Not found"});
         }
-    } catch (e: any) {
-        next(e);
-    }
+    });
 });
 
 router.post("/signup", async (req, res, next) => {
-    try {
+    await safeExecutionWrapper(res, async () => {
+        if (!WishDto(userSignupDto, req.body, res)) return;
         const { email, password, firstname, lastname } = req.body;
         const hash = await bcrypt.hash(password, 10);
         const isNotAvailable = await prisma.user.findUnique({
@@ -75,15 +78,15 @@ router.post("/signup", async (req, res, next) => {
             sameSite: "none",
         });
 
-        res.status(200).json({ message: "User created" });
-    } catch (e: any) {
-        next(e);
-    }
+        res.status(201).json({ message: "User created" });
+    });
 });
 
-router.get("/signout", (req, res) => {
-    res.clearCookie("dG9rZW4");
-    res.status(200).json({ message: "User logged out" });
+router.get("/signout", async (req, res, next) => {
+    await safeExecutionWrapper(res, async () => {
+        res.clearCookie("dG9rZW4");
+        res.status(200).json({ message: "User logged out" });
+    });
 });
 
 export default router;

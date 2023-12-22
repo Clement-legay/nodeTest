@@ -9,11 +9,22 @@ import file from "./Routes/file";
 import CheckLimiter from "./Middlewares/rateLimiter";
 import product from "./Routes/product";
 import order from "./Routes/order";
+import cors from "cors";
+import helmet from "helmet";
+import admin from "./Routes/admin";
+import isAdminMiddleware from "./Middlewares/isAdmin";
 
 const app = express();
 const port = 3000;
 
+app.use(helmet());
+app.use(cors({
+    origin: "*", // allow all origins
+    methods: ["GET", "POST", "PUT", "DELETE"], // allow all methods
+}));
+
 app.set("view engine", "ejs");
+app.set("trust proxy", 1);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
@@ -28,22 +39,13 @@ app.use("/auth", auth);
 app.use("/file", file)
 
 app.use(authentication);
+app.use("/admin", isAdminMiddleware, admin);
+
 app.use("/product", product);
 app.use("/order", order)
-app.use("/user", user);
+app.use("/account", user);
 
 app.use(errorCatcher);
-
-app.get("/ping", (req: express.Request, res: express.Response) => {
-    res.status(200).json({ message: "pong" });
-});
-
-app.post("/round", (req: express.Request, res: express.Response) => {
-    const body = req.body;
-    if (body.number) {
-        res.status(200).json({ numberRounded: Math.round(body.number) });
-    }
-})
 
 app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

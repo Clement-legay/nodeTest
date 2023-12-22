@@ -35,6 +35,14 @@ const checkFolder = (path: string) => {
     sync(path);
 }
 
+export const DeleteFile = (path: string) => {
+    unlink(path, (err) => {
+        if (err) {
+            console.log(err.message);
+        }
+    });
+}
+
 const FileHelper = (req: Request, res: Response, next: NextFunction) => {
     try {
         const previousData = req.body;
