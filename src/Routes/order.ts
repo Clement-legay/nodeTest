@@ -59,6 +59,17 @@ router.post("/", async (req, res, next) => {
         if (!WishDto(orderCreateDto, req.body, res)) return;
         const { user } = req.body;
         const productArray: { productId: string, quantity: number}[] = req.body.productArray;
+        const productExists = await prisma.product.findMany({
+            where: {
+                id: {
+                    in: productArray.map((product) => product.productId),
+                }
+            }
+        });
+        if (productExists.length !== productArray.length) {
+            res.status(400).json({ message: "One or more products not found" });
+            return;
+        }
         const order = await prisma.order.create({
             data: {
                 userId: user.id,
@@ -94,6 +105,27 @@ router.put("/:id", async (req, res, next) => {
         const { user } = req.body;
         const { id } = req.params;
         const productArray: { productId: string, quantity: number}[] = req.body.productArray;
+        const orderExists = await prisma.order.findFirst({
+            where: {
+                id: id,
+                userId: user.id,
+            }
+        });
+        if (!orderExists) {
+            res.status(404).json({ message: "Order not found" });
+            return;
+        }
+        const productExists = await prisma.product.findMany({
+            where: {
+                id: {
+                    in: productArray.map((product) => product.productId),
+                }
+            }
+        });
+        if (productExists.length !== productArray.length) {
+            res.status(400).json({ message: "One or more products not found" });
+            return;
+        }
         const order = await prisma.order.update({
             where: {
                 id: id,
@@ -144,6 +176,16 @@ router.delete("/:id", async (req, res, next) => {
     await safeExecutionWrapper(res, async () => {
         const { user } = req.body;
         const { id } = req.params;
+        const orderExists = await prisma.order.findFirst({
+            where: {
+                id: id,
+                userId: user.id,
+            }
+        });
+        if (!orderExists) {
+            res.status(404).json({ message: "Order not found" });
+            return;
+        }
         const order = await prisma.order.delete({
             where: {
                 id: id,

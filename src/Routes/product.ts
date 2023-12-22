@@ -92,6 +92,15 @@ router.put("/:id", isManager, FileHelper, async (req, res, next) => {
         if (!WishDto(productUpdateDto, req.body, res)) return;
         const { id } = req.params;
         const { name, price, description, imagePaths } = req.body;
+        const productExists = await prisma.product.findUnique({
+            where: {
+                id: id,
+            }
+        });
+        if (!productExists) {
+            res.status(404).json({ message: "Product not found" });
+            return;
+        }
         const productImages = await prisma.image.findMany({
             where: {
                 products: {
@@ -151,6 +160,15 @@ router.put("/:id", isManager, FileHelper, async (req, res, next) => {
 router.delete("/:id", isManager, async (req, res, next) => {
     await safeExecutionWrapper(res, async () => {
         const { id } = req.params;
+        const productExists = await prisma.product.findUnique({
+            where: {
+                id: id,
+            }
+        });
+        if (!productExists) {
+            res.status(404).json({ message: "Product not found" });
+            return;
+        }
         const product = await prisma.product.delete({
             where: {
                 id: id,

@@ -17,11 +17,11 @@ import isAdminMiddleware from "./Middlewares/isAdmin";
 const app = express();
 const port = 3000;
 
-// app.use(helmet());
-// app.use(cors({
-//     origin: "*", // allow all origins
-//     methods: ["GET", "POST", "PUT", "DELETE"], // allow all methods
-// }));
+app.use(helmet());
+app.use(cors({
+    origin: "*", // allow all origins
+    methods: ["GET", "POST", "PUT", "DELETE"], // allow all methods
+}));
 
 app.set("view engine", "ejs");
 // app.set("trust proxy", 1);
