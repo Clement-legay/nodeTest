@@ -1,10 +1,9 @@
 import express from "express";
-import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import prisma from "../Config/Database";
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 router.post("/signin", async (req, res, next) => {
     try {
@@ -57,6 +56,7 @@ router.post("/signup", async (req, res, next) => {
             data: {
                 firstName: firstname,
                 lastName: lastname,
+                role: "USER",
                 email: email,
                 password: hash,
             }

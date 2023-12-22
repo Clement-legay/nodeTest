@@ -6,49 +6,74 @@ generator client {
 }
 
 datasource db {
-  provider = "mongodb"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model User {
-  id        String @id @default(auto()) @map("_id") @db.ObjectId
+  id        String @id @default(cuid())
   firstName String
   lastName  String
   email     String @unique
+  role      String
   password  String
 
-  posts Post[] @relation("UserToPost")
-}
-
-model Post {
-  id        String  @id @default(auto()) @map("_id") @db.ObjectId
-  title     String
-  content   String
-  published Boolean @default(false)
-
-  author   User?   @relation("UserToPost", fields: [authorId], references: [id])
-  authorId String? @map("author_id") @db.ObjectId
-
-  images ImagePost[] @relation("PostToImagePost")
+  Order Order[]
 }
 
 model Image {
-  id     String @id @default(auto()) @map("_id") @db.ObjectId
+  id     String @id @default(cuid())
   url    String
   path   String
   folder String
 
-  posts ImagePost[] @relation("ImageToImagePost")
+  products  ImageProduct[]
+
+  productId String?
+
+  @@unique([path, folder])
 }
 
-model ImagePost {
-  id String @id @default(auto()) @map("_id") @db.ObjectId
+model Product {
+  id           String         @id @default(cuid())
+  name         String
+  description  String
+  price        Float
 
-  imageId String @map("image_id") @db.ObjectId
-  image   Image  @relation("ImageToImagePost", fields: [imageId], references: [id])
+  OrderProduct OrderProduct[]
+  imagesProducts ImageProduct[]
+}
 
-  postId String @map("post_id") @db.ObjectId
-  post   Post   @relation("PostToImagePost", fields: [postId], references: [id])
+model Order {
+  id        String   @id @default(cuid())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
-  @@unique([postId, imageId])
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+
+  products OrderProduct[]
+}
+
+model OrderProduct {
+  id        String   @id @default(cuid())
+  quantity  Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId String
+
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  productId String
+}
+
+model ImageProduct {
+  imageId String
+  image   Image  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+
+  productId String
+  product   Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+
+  @@id([productId, imageId])
 }

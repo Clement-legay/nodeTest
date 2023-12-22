@@ -1,38 +1,36 @@
 import express from 'express';
-import pokemon from "./Routes/pokemon";
 import myLogger from "./Middlewares/logger";
 import authentication from "./Middlewares/authentication";
-import pickle from "./Routes/pickle";
 import user from "./Routes/user";
 import auth from "./Routes/auth";
 import errorCatcher from "./Middlewares/errorCatcher";
 import cookieParser from "cookie-parser";
-import post from "./Routes/post";
+import file from "./Routes/file";
 import CheckLimiter from "./Middlewares/rateLimiter";
+import product from "./Routes/product";
+import order from "./Routes/order";
 
 const app = express();
 const port = 3000;
 
 app.set("view engine", "ejs");
 
-app.use(express.json())
-app.use(express.urlencoded({ extended: false }))
+app.use(express.urlencoded({ extended: false }));
+app.use(express.json());
+
 app.use(cookieParser());
-
 app.use(CheckLimiter);
-
 app.use(errorCatcher)
 app.use(myLogger);
 
 
 app.use("/auth", auth);
+app.use("/file", file)
 
 app.use(authentication);
-
-app.use("/pokemon", pokemon);
-app.use("/pickle", pickle);
+app.use("/product", product);
+app.use("/order", order)
 app.use("/user", user);
-app.use("/post", post);
 
 app.use(errorCatcher);
 
