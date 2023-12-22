@@ -24,7 +24,7 @@ const port = 3000;
 // }));
 
 app.set("view engine", "ejs");
-app.set("trust proxy", 1);
+// app.set("trust proxy", 1);
 
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
